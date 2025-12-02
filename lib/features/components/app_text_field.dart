@@ -4,16 +4,18 @@ class AppTextField extends StatelessWidget {
   final String label;
   final String hint;
   final int maxLines;
-  final ValueChanged<String> onChanged;
-  final String? Function(String?)? validator; // Added validation function
+  final ValueChanged<String>? onChanged;
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   const AppTextField({
     super.key,
     required this.label,
     required this.hint,
     this.maxLines = 1,
-    required this.onChanged,
+    this.onChanged,
     this.validator,
+    this.controller,
   });
 
   @override
@@ -25,13 +27,12 @@ class AppTextField extends StatelessWidget {
         Text(label, style: theme.textTheme.labelLarge),
         const SizedBox(height: 8),
         TextFormField(
-          // Changed from TextField to TextFormField
+          controller: controller, // Use the controller
           maxLines: maxLines,
           style: theme.textTheme.bodyLarge,
           onChanged: onChanged,
-          validator: validator, // Hook up validator
-          autovalidateMode:
-              AutovalidateMode.onUserInteraction, // Validate on interaction
+          validator: validator,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -48,7 +49,6 @@ class AppTextField extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(4),
             ),
-            // Added Error Border Styles
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(color: theme.colorScheme.error),
               borderRadius: BorderRadius.circular(4),

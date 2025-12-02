@@ -5,6 +5,8 @@ import '../../../components/selection_chip.dart';
 class ScheduleStep extends StatelessWidget {
   final TimeOfDay wakeTime;
   final TimeOfDay sleepTime;
+  final List<String> selectedPreferences; // Added state
+  final ValueChanged<String> onTogglePreference; // Added callback
   final VoidCallback onWakeTimeTap;
   final VoidCallback onSleepTimeTap;
 
@@ -12,6 +14,8 @@ class ScheduleStep extends StatelessWidget {
     super.key,
     required this.wakeTime,
     required this.sleepTime,
+    required this.selectedPreferences,
+    required this.onTogglePreference,
     required this.onWakeTimeTap,
     required this.onSleepTimeTap,
   });
@@ -19,6 +23,9 @@ class ScheduleStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    // The available options for injections
+    final options = ["Morning Kickoff", "Mid-Day Check", "Evening Review"];
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -66,11 +73,14 @@ class ScheduleStep extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: const [
-              SelectionChip(label: "Morning Kickoff", isSelected: true),
-              SelectionChip(label: "Mid-Day Check", isSelected: true),
-              SelectionChip(label: "Evening Review", isSelected: false),
-            ],
+            children: options.map((option) {
+              final isSelected = selectedPreferences.contains(option);
+              return SelectionChip(
+                label: option,
+                isSelected: isSelected,
+                onTap: () => onTogglePreference(option),
+              );
+            }).toList(),
           ),
         ],
       ),

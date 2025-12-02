@@ -6,9 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 // Logic Imports
 import '../bloc/onboarding_cubit.dart';
 import '../bloc/onboarding_state.dart';
+import '../repo/onboarding_repo.dart';
 
 // Widget Imports
-import '../repo/onboarding_repo.dart';
 import 'widgets/mission_step.dart';
 import 'widgets/protocol_step.dart';
 import 'widgets/schedule_step.dart';
@@ -19,8 +19,7 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // SCOPED INJECTION (Best Practice)
-    // The Cubit is created here (start of flow) and closed automatically when this widget is disposed (end of flow).
+    // Inject the Cubit and Repo here
     return BlocProvider(
       create: (context) => OnboardingCubit(
         // We inject the Global Repo into the Local Cubit
@@ -46,6 +45,8 @@ class _OnboardingViewState extends State<OnboardingView> {
   final int _totalPages = 4;
 
   void _nextPage(BuildContext context, OnboardingState state) {
+    FocusScope.of(context).unfocus();
+
     final cubit = context.read<OnboardingCubit>();
 
     // Phase 1 Validation
@@ -73,6 +74,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 
   void _prevPage() {
+    FocusScope.of(context).unfocus();
     if (_currentPage > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -83,6 +85,8 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   // Date Picker Logic
   Future<void> _selectDeadline(BuildContext context) async {
+    FocusScope.of(context).unfocus();
+
     final cubit = context.read<OnboardingCubit>();
     final theme = Theme.of(context);
 
@@ -115,8 +119,29 @@ class _OnboardingViewState extends State<OnboardingView> {
     bool isWake,
     TimeOfDay current,
   ) async {
+    FocusScope.of(context).unfocus();
+
     final cubit = context.read<OnboardingCubit>();
-    final picked = await showTimePicker(context: context, initialTime: current);
+    final theme = Theme.of(context);
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: current,
+      builder: (context, child) {
+        return Theme(
+          data: theme.copyWith(
+            colorScheme: theme.colorScheme.copyWith(
+              tertiary: theme.colorScheme.primary,
+              onTertiary: theme.colorScheme.onPrimary,
+              tertiaryContainer: theme.colorScheme.primary,
+              onTertiaryContainer: theme.colorScheme.onPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
     if (picked != null) {
       if (isWake) {
         cubit.updateWakeTime(picked);
@@ -149,114 +174,134 @@ class _OnboardingViewState extends State<OnboardingView> {
 
         return Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: _currentPage > 0
-                ? IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: _prevPage,
-                    color: colorScheme.secondary,
-                  )
-                : null,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(_totalPages, (index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: 40,
-                  height: 4,
-                  color: index <= _currentPage
-                      ? colorScheme.primary
-                      : colorScheme.secondary.withValues(alpha: 0.3),
-                );
-              }),
-            ),
-            centerTitle: true,
-          ),
-          body: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (page) => setState(() => _currentPage = page),
-            children: [
-              SingleChildScrollView(
-                child: MissionStep(
-                  formKey: _missionFormKey,
-                  onObjectiveChanged: cubit.updateObjective,
-                  deadline: state.deadline,
-                  onDeadlineTap: () => _selectDeadline(context),
-                ),
-              ),
-              SingleChildScrollView(
-                child: ProtocolStep(
-                  intensity: state.intensity,
-                  onIntensityChanged: cubit.updateIntensity,
-                ),
-              ),
-              SingleChildScrollView(
-                child: ScheduleStep(
-                  wakeTime: state.wakeTime,
-                  sleepTime: state.sleepTime,
-                  onWakeTimeTap: () =>
-                      _selectTime(context, true, state.wakeTime),
-                  onSleepTimeTap: () =>
-                      _selectTime(context, false, state.sleepTime),
-                ),
-              ),
-              SingleChildScrollView(
-                child: EnemyStep(
-                  selectedWeaknesses: state.weaknesses,
-                  onToggleWeakness: cubit.toggleWeakness,
-                ),
-              ),
-            ],
-          ),
-          bottomNavigationBar: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              border: Border(
-                top: BorderSide(
-                  color: theme.colorScheme.secondary.withValues(alpha: 0.5),
-                ),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Column(
               children: [
-                Text(
-                  _currentPage == _totalPages - 1
-                      ? "INITIALIZE PROTOCOL"
-                      : "AWAITING INPUT...",
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
-                    fontSize: 12,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: state.status == OnboardingStatus.submitting
-                      ? null
-                      : () => _nextPage(context, state),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
+                Expanded(
+                  child: NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      SliverAppBar(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        leading: _currentPage > 0
+                            ? IconButton(
+                                icon: const Icon(Icons.arrow_back_ios_new),
+                                onPressed: _prevPage,
+                                color: colorScheme.secondary,
+                              )
+                            : null,
+                        title: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(_totalPages, (index) {
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              width: 40,
+                              height: 4,
+                              color: index <= _currentPage
+                                  ? colorScheme.primary
+                                  : colorScheme.secondary.withValues(
+                                      alpha: 0.3,
+                                    ),
+                            );
+                          }),
+                        ),
+                        centerTitle: true,
+                      ),
+                    ],
+                    body: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      onPageChanged: (page) =>
+                          setState(() => _currentPage = page),
+                      children: [
+                        SingleChildScrollView(
+                          child: MissionStep(
+                            formKey: _missionFormKey,
+                            onObjectiveChanged: cubit.updateObjective,
+                            deadline: state.deadline,
+                            onDeadlineTap: () => _selectDeadline(context),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: ProtocolStep(
+                            intensity: state.intensity,
+                            onIntensityChanged: cubit.updateIntensity,
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: ScheduleStep(
+                            wakeTime: state.wakeTime,
+                            sleepTime: state.sleepTime,
+                            onWakeTimeTap: () =>
+                                _selectTime(context, true, state.wakeTime),
+                            onSleepTimeTap: () =>
+                                _selectTime(context, false, state.sleepTime),
+                            selectedPreferences: state.injectionPreferences,
+                            onTogglePreference: cubit.toggleInjectionPreference,
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: EnemyStep(
+                            selectedWeaknesses: state.weaknesses,
+                            onToggleWeakness: cubit.toggleWeakness,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: state.status == OnboardingStatus.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.black,
-                          ),
-                        )
-                      : Text(
-                          _currentPage == _totalPages - 1
-                              ? "SIGN CONTRACT"
-                              : "NEXT >",
+                ),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    border: Border(
+                      top: BorderSide(
+                        color: theme.colorScheme.secondary.withValues(
+                          alpha: 0.5,
                         ),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _currentPage == _totalPages - 1
+                            ? "INITIALIZE PROTOCOL"
+                            : "AWAITING INPUT...",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
+                          fontSize: 12,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: state.status == OnboardingStatus.submitting
+                            ? null
+                            : () => _nextPage(context, state),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                        ),
+                        child: state.status == OnboardingStatus.submitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.black,
+                                ),
+                              )
+                            : Text(
+                                _currentPage == _totalPages - 1
+                                    ? "SIGN CONTRACT"
+                                    : "NEXT >",
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

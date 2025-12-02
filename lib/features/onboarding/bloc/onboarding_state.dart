@@ -32,7 +32,7 @@ class OnboardingState {
     this.dailyProtocol = '',
     this.wakeTime = const TimeOfDay(hour: 7, minute: 0),
     this.sleepTime = const TimeOfDay(hour: 23, minute: 0),
-    this.injectionPreferences = const ['Morning Kickoff', 'Mid-Day Check'],
+    this.injectionPreferences = const ['Morning Kickoff', 'Evening Review'],
     this.weaknesses = const [],
     this.status = OnboardingStatus.initial,
     this.errorMessage,

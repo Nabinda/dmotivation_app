@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   // ===========================================================================
   // OPTION 1: TERMINAL VELOCITY (The Engineer/Hacker Vibe)
-  // Vibe: Retro-futuristic, precise, system-oriented.
   // ===========================================================================
 
   // DARK MODE
@@ -84,12 +83,10 @@ class AppTheme {
 
   // LIGHT MODE
   static ThemeData get terminalVelocityLight {
-    const primaryColor = Color(
-      0xFF00C853,
-    ); // Darker Green for visibility on white
-    const backgroundColor = Color(0xFFF5F5F5); // White Smoke
-    const surfaceColor = Color(0xFFFFFFFF); // Pure White
-    const errorColor = Color(0xFFD32F2F); // Darker Red
+    const primaryColor = Color(0xFF00C853);
+    const backgroundColor = Color(0xFFF5F5F5);
+    const surfaceColor = Color(0xFFFFFFFF);
+    const errorColor = Color(0xFFD32F2F);
 
     return ThemeData(
       useMaterial3: true,
@@ -161,14 +158,13 @@ class AppTheme {
 
   // ===========================================================================
   // OPTION 2: DEFCON 1 (The Aggressive/Urgency Vibe)
-  // Vibe: Warning signs, cockpit alerts, high stakes.
   // ===========================================================================
 
   // DARK MODE
   static ThemeData get defcon1Dark {
-    const primaryColor = Color(0xFFFF4500); // International Orange
-    const backgroundColor = Color(0xFF050505); // True Black
-    const surfaceColor = Color(0xFF111111); // Carbon
+    const primaryColor = Color(0xFFFF4500);
+    const backgroundColor = Color(0xFF050505);
+    const surfaceColor = Color(0xFF111111);
 
     return ThemeData(
       useMaterial3: true,
@@ -230,9 +226,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
+      // UPDATED: Replaced MaterialStateProperty with WidgetStateProperty
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primaryColor;
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primaryColor;
           return Colors.transparent;
         }),
         side: const BorderSide(color: primaryColor, width: 2),
@@ -242,11 +239,9 @@ class AppTheme {
 
   // LIGHT MODE
   static ThemeData get defcon1Light {
-    const primaryColor = Color(
-      0xFFFF4500,
-    ); // International Orange (Kept same for urgency)
-    const backgroundColor = Color(0xFFFFFFFF); // Pure White
-    const surfaceColor = Color(0xFFF5F5F5); // Light Grey
+    const primaryColor = Color(0xFFFF4500);
+    const backgroundColor = Color(0xFFFFFFFF);
+    const surfaceColor = Color(0xFFF5F5F5);
 
     return ThemeData(
       useMaterial3: true,
@@ -309,9 +304,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
+      // UPDATED: Replaced MaterialStateProperty with WidgetStateProperty
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) return primaryColor;
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return primaryColor;
           return Colors.transparent;
         }),
         side: const BorderSide(color: primaryColor, width: 2),
@@ -321,14 +317,13 @@ class AppTheme {
 
   // ===========================================================================
   // OPTION 3: COLD TRUTH (The Clinical Vibe)
-  // Vibe: Surgical, cold, unemotional, high-tech.
   // ===========================================================================
 
   // DARK MODE
   static ThemeData get coldTruthDark {
-    const primaryColor = Color(0xFF38BDF8); // Ice Blue
-    const backgroundColor = Color(0xFF0F172A); // Dark Slate Blue
-    const surfaceColor = Color(0xFF1E293B); // Dark Slate
+    const primaryColor = Color(0xFF38BDF8);
+    const backgroundColor = Color(0xFF0F172A);
+    const surfaceColor = Color(0xFF1E293B);
 
     return ThemeData(
       useMaterial3: true,
@@ -403,11 +398,9 @@ class AppTheme {
 
   // LIGHT MODE
   static ThemeData get coldTruthLight {
-    const primaryColor = Color(
-      0xFF0284C7,
-    ); // Sky 600 (Darker Blue for light mode)
-    const backgroundColor = Color(0xFFF1F5F9); // Slate 100
-    const surfaceColor = Color(0xFFFFFFFF); // White
+    const primaryColor = Color(0xFF0284C7);
+    const backgroundColor = Color(0xFFF1F5F9);
+    const surfaceColor = Color(0xFFFFFFFF);
 
     return ThemeData(
       useMaterial3: true,
@@ -417,10 +410,10 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFFCBD5E1), // Slate 300
+        secondary: Color(0xFFCBD5E1),
         surface: surfaceColor,
-        onSurface: Color(0xFF0F172A), // Slate 900
-        tertiary: Color(0xFF64748B), // Slate 500
+        onSurface: Color(0xFF0F172A),
+        tertiary: Color(0xFF64748B),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.inter(
@@ -463,9 +456,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(
-            color: Color(0xFFE2E8F0),
-          ), // Light Slate border
+          side: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

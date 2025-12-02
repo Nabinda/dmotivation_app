@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Wait a moment after final log, then navigate
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
-      context.go('/home'); // Navigate to the main dashboard/showcase
+      context.go('/onboarding');
     }
   }
 

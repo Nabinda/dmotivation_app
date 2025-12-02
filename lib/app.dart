@@ -1,85 +1,66 @@
+import 'package:dmotivation/routes/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'theme/theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'themes/app_theme.dart';
+import 'features/settings/bloc/theme_cubit.dart';
 
-class DMotivationDemoApp extends StatefulWidget {
-  const DMotivationDemoApp({super.key});
+class DMotivationApp extends StatelessWidget {
+  const DMotivationApp({super.key});
 
-  @override
-  State<DMotivationDemoApp> createState() => _DMotivationDemoAppState();
-}
-
-class _DMotivationDemoAppState extends State<DMotivationDemoApp> {
-  // State to manage current theme selection
-  String _selectedVibe = 'Terminal Velocity';
-  Brightness _brightness = Brightness.dark;
-
-  // Helper to get the correct ThemeData based on state
-  ThemeData get _currentTheme {
-    switch (_selectedVibe) {
+  ThemeData _getTheme(String vibe, bool isDark) {
+    switch (vibe) {
       case 'Defcon 1':
-        return _brightness == Brightness.dark
-            ? AppTheme.defcon1Dark
-            : AppTheme.defcon1Light;
+        return isDark ? AppTheme.defcon1Dark : AppTheme.defcon1Light;
       case 'Cold Truth':
-        return _brightness == Brightness.dark
-            ? AppTheme.coldTruthDark
-            : AppTheme.coldTruthLight;
+        return isDark ? AppTheme.coldTruthDark : AppTheme.coldTruthLight;
       case 'Terminal Velocity':
       default:
-        return _brightness == Brightness.dark
+        return isDark
             ? AppTheme.terminalVelocityDark
             : AppTheme.terminalVelocityLight;
     }
   }
 
-  void _toggleBrightness() {
-    setState(() {
-      _brightness = _brightness == Brightness.dark
-          ? Brightness.light
-          : Brightness.dark;
-    });
-  }
-
-  void _changeVibe(String newVibe) {
-    setState(() {
-      _selectedVibe = newVibe;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'D/MOTIVATION Theme Demo',
-      theme: _currentTheme,
-      home: ThemeShowcaseScreen(
-        currentVibe: _selectedVibe,
-        currentBrightness: _brightness,
-        onVibeChanged: _changeVibe,
-        onBrightnessToggled: _toggleBrightness,
-      ),
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'D/MOTIVATION',
+          theme: _getTheme(state.vibe, state.isDark),
+          routerConfig: AppRouter.router, // Hook up the router config
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            final clampedScaler = mediaQuery.textScaler.clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 1.2,
+            );
+            return MediaQuery(
+              data: mediaQuery.copyWith(textScaler: clampedScaler),
+              child: child!,
+            );
+          },
+        );
+      },
     );
   }
 }
 
-class ThemeShowcaseScreen extends StatelessWidget {
-  final String currentVibe;
-  final Brightness currentBrightness;
-  final ValueChanged<String> onVibeChanged;
-  final VoidCallback onBrightnessToggled;
+// -----------------------------------------------------------------------------
+// THEME SHOWCASE SCREEN (Moved from feature view)
+// -----------------------------------------------------------------------------
 
-  const ThemeShowcaseScreen({
-    super.key,
-    required this.currentVibe,
-    required this.currentBrightness,
-    required this.onVibeChanged,
-    required this.onBrightnessToggled,
-  });
+class ThemeShowcaseScreen extends StatelessWidget {
+  const ThemeShowcaseScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Access the Cubit and State
+    final cubit = context.read<ThemeCubit>();
+    final state = context.watch<ThemeCubit>().state;
     final theme = Theme.of(context);
-    final isDark = currentBrightness == Brightness.dark;
+    final isDark = state.isDark;
 
     return Scaffold(
       appBar: AppBar(
@@ -87,7 +68,7 @@ class ThemeShowcaseScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-            onPressed: onBrightnessToggled,
+            onPressed: () => cubit.toggleBrightness(),
             tooltip: 'Toggle Brightness',
           ),
         ],
@@ -95,9 +76,7 @@ class ThemeShowcaseScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(24.0),
         children: [
-          // -------------------------------------------------------------------
-          // 1. THEME CONTROLS
-          // -------------------------------------------------------------------
+          // THEME CONTROLS
           Card(
             margin: const EdgeInsets.only(bottom: 32),
             child: Padding(
@@ -118,18 +97,18 @@ class ThemeShowcaseScreen extends StatelessWidget {
                     children: [
                       _VibeButton(
                         label: 'Terminal Velocity',
-                        isSelected: currentVibe == 'Terminal Velocity',
-                        onTap: () => onVibeChanged('Terminal Velocity'),
+                        isSelected: state.vibe == 'Terminal Velocity',
+                        onTap: () => cubit.changeVibe('Terminal Velocity'),
                       ),
                       _VibeButton(
                         label: 'Defcon 1',
-                        isSelected: currentVibe == 'Defcon 1',
-                        onTap: () => onVibeChanged('Defcon 1'),
+                        isSelected: state.vibe == 'Defcon 1',
+                        onTap: () => cubit.changeVibe('Defcon 1'),
                       ),
                       _VibeButton(
                         label: 'Cold Truth',
-                        isSelected: currentVibe == 'Cold Truth',
-                        onTap: () => onVibeChanged('Cold Truth'),
+                        isSelected: state.vibe == 'Cold Truth',
+                        onTap: () => cubit.changeVibe('Cold Truth'),
                       ),
                     ],
                   ),
@@ -138,9 +117,15 @@ class ThemeShowcaseScreen extends StatelessWidget {
             ),
           ),
 
-          // -------------------------------------------------------------------
-          // 2. TYPOGRAPHY SHOWCASE
-          // -------------------------------------------------------------------
+          _SectionHeader(title: 'SYSTEM STATUS'),
+          Text(
+            'Current Vibe: ${state.vibe.toUpperCase()}',
+            style: theme.textTheme.displayMedium,
+          ),
+          const SizedBox(height: 8),
+          Text('Database Sync: Active', style: theme.textTheme.bodyMedium),
+
+          const SizedBox(height: 24),
           _SectionHeader(title: 'TYPOGRAPHY'),
           Text('DISPLAY LARGE', style: theme.textTheme.displayLarge),
           const SizedBox(height: 8),
@@ -150,19 +135,8 @@ class ThemeShowcaseScreen extends StatelessWidget {
             'Body Large: The quick brown fox jumps over the lazy dog. Deconstruct your excuses.',
             style: theme.textTheme.bodyLarge,
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Body Medium: Secondary text information. System status normal. Protocol active.',
-            style: theme.textTheme.bodyMedium,
-          ),
           const SizedBox(height: 24),
-
-          // -------------------------------------------------------------------
-          // 3. COMPONENT SHOWCASE
-          // -------------------------------------------------------------------
           _SectionHeader(title: 'COMPONENTS'),
-
-          // Buttons
           Wrap(
             spacing: 16,
             runSpacing: 16,
@@ -172,103 +146,13 @@ class ThemeShowcaseScreen extends StatelessWidget {
                 onPressed: () {},
                 child: const Text('PRIMARY ACTION'),
               ),
-              ElevatedButton(
-                onPressed: null, // Disabled state
-                child: const Text('DISABLED'),
-              ),
+              ElevatedButton(onPressed: null, child: const Text('DISABLED')),
               FloatingActionButton(
                 onPressed: () {},
                 mini: true,
                 child: const Icon(Icons.add),
               ),
             ],
-          ),
-          const SizedBox(height: 24),
-
-          // Inputs & Selection
-          const TextField(
-            decoration: InputDecoration(
-              labelText: 'Target Objective',
-              hintText: 'e.g., Launch SaaS',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Checkbox(value: true, onChanged: (v) {}),
-              const Text('Daily Protocol Active'),
-              const SizedBox(width: 24),
-              Checkbox(value: false, onChanged: (v) {}),
-              const Text('Pending Task'),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // -------------------------------------------------------------------
-          // 4. CARDS & SURFACES
-          // -------------------------------------------------------------------
-          _SectionHeader(title: 'SURFACES'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'PHASE 2: THE GRIND',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Icon(Icons.timer, color: theme.colorScheme.secondary),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '45 DAYS REMAINING',
-                    style: theme.textTheme.displayMedium?.copyWith(
-                      fontSize: 24,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Intensity level is set to Extreme. Maintain operational cadence.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Error / Alert State
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.error.withOpacity(0.1),
-              border: Border.all(color: theme.colorScheme.error),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.warning_amber, color: theme.colorScheme.error),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'CRITICAL FAILURE: Protocol missed 2 days in a row.',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.error,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -284,7 +168,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 16.0, top: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -317,7 +201,6 @@ class _VibeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -329,7 +212,7 @@ class _VibeButton extends StatelessWidget {
                 ? theme.colorScheme.primary
                 : theme.colorScheme.secondary,
           ),
-          borderRadius: BorderRadius.circular(4), // Matching basic shape
+          borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
           label.toUpperCase(),

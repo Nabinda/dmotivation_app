@@ -137,6 +137,10 @@ class DashboardView extends StatelessWidget {
 
           final isViewingToday =
               state.selectedDayIndex == state.currentDayIndex;
+          // Determine failure state: Past day AND not complete
+          final isDayFailed =
+              state.selectedDayIndex < state.currentDayIndex &&
+              !state.isDayComplete;
 
           return RefreshIndicator(
             onRefresh: () => context.read<DashboardCubit>().loadDashboard(),
@@ -167,7 +171,7 @@ class DashboardView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // 3. Visual Reward (Animated & Polished)
+                  // 3. Visual Reward / Failure (Animated)
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 600),
                     switchInCurve: Curves.easeOutBack,
@@ -226,6 +230,52 @@ class DashboardView extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   "DAY ${state.selectedDayIndex} PROTOCOL COMPLETE. STAND DOWN.",
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        : isDayFailed
+                        ? Container(
+                            key: const ValueKey('day_failed'),
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 16,
+                            ),
+                            margin: const EdgeInsets.only(bottom: 24),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.error.withValues(
+                                alpha: 0.1,
+                              ),
+                              border: Border.all(
+                                color: theme.colorScheme.error,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: theme.colorScheme.error,
+                                  size: 32,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "PROTOCOL FAILED",
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.error,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "DAY ${state.selectedDayIndex} OBJECTIVES INCOMPLETE.",
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurface,
                                   ),

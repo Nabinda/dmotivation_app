@@ -27,7 +27,9 @@ class DashboardCubit extends Cubit<DashboardState> {
           strategy['meta']?['created_at'] ?? DateTime.now().toIso8601String();
       final deadlineString = strategy['profile']['deadline'];
 
-      final startDate = _normalizeDate(DateTime.parse(createdString));
+      final startDate = _normalizeDate(
+        DateTime.parse(createdString).subtract(Duration(days: 2)),
+      );
       final deadline = _normalizeDate(DateTime.parse(deadlineString));
       final now = _normalizeDate(DateTime.now());
 

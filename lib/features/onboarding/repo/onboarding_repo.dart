@@ -5,47 +5,42 @@ class OnboardingRepo {
   final OnboardingLocalService _localService;
   final OnboardingRemoteService _remoteService;
 
-  // Dependency Injection via constructor (optional, can simulate here)
   OnboardingRepo({
     OnboardingLocalService? localService,
     OnboardingRemoteService? remoteService,
   }) : _localService = localService ?? OnboardingLocalService(),
        _remoteService = remoteService ?? OnboardingRemoteService();
 
-  // Initialization
   Future<void> init() async {
     await _localService.init();
   }
 
-  // The Main Strategy Flow: Remote -> Local -> Return
+  // Generate (Remote -> Local)
   Future<Map<String, dynamic>> generateStrategy(
     Map<String, dynamic> userProfile,
   ) async {
     try {
-      // 1. Fetch from API
       final remoteData = await _remoteService.generateStrategy(userProfile);
-
-      // 2. Cache Locally (Offline-First)
       await _localService.saveStrategy(remoteData);
-
       return remoteData;
     } catch (e) {
       rethrow;
     }
   }
 
-  // Accessors for UI
+  // Save Progress (Local Update)
+  Future<void> saveStrategyProgress(
+    Map<String, dynamic> updatedStrategy,
+  ) async {
+    await _localService.updateStrategy(updatedStrategy);
+  }
+
+  // Get Active
   Map<String, dynamic>? getActiveStrategy() {
     return _localService.getStrategy();
   }
 
   Future<void> resetStrategy() async {
     await _localService.clearStrategy();
-  }
-
-  Future<void> saveStrategyProgress(
-    Map<String, dynamic> updatedStrategy,
-  ) async {
-    await _localService.updateStrategy(updatedStrategy);
   }
 }

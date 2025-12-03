@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class PhaseStatusCard extends StatelessWidget {
   final Map<String, dynamic> phaseData;
+  final double progress; // Re-added Dynamic Progress
   final VoidCallback? onTimelineTap;
 
   const PhaseStatusCard({
     super.key,
     required this.phaseData,
+    required this.progress, // Required
     this.onTimelineTap,
   });
 
@@ -30,7 +32,6 @@ class PhaseStatusCard extends StatelessWidget {
     final theme = Theme.of(context);
     final phaseColor = _parseColor(phaseData['color'], theme);
 
-    // Logic: Darker grey in light mode for readability
     final labelColor = theme.brightness == Brightness.light
         ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
         : theme.colorScheme.secondary;
@@ -79,27 +80,35 @@ class PhaseStatusCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+
+          // DYNAMIC PROGRESS BAR
           LinearProgressIndicator(
-            value: 0.4,
+            value: progress, // Dynamic value 0.0 - 1.0
             backgroundColor: phaseColor.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation(phaseColor),
           ),
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              "${(progress * 100).toInt()}% COMPLETE", // Dynamic Label
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: labelColor,
+                fontSize: 10,
+              ),
+            ),
+          ),
 
-          // Added Timeline Button
           if (onTimelineTap != null) ...[
             const SizedBox(height: 16),
             Center(
               child: TextButton.icon(
                 onPressed: onTimelineTap,
-                icon: Icon(
-                  Icons.visibility,
-                  size: 16,
-                  color: labelColor, // Uses high-contrast color
-                ),
+                icon: Icon(Icons.visibility, size: 16, color: labelColor),
                 label: Text(
                   "VIEW FULL TIMELINE",
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: labelColor, // Uses high-contrast color
+                    color: labelColor,
                   ),
                 ),
                 style: TextButton.styleFrom(

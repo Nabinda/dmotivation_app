@@ -12,10 +12,19 @@ class OnboardingLocalService {
     }
   }
 
-  // Save Strategy JSON
+  // Save New Strategy (Create)
   Future<void> saveStrategy(Map<String, dynamic> strategy) async {
     final box = Hive.box(_boxName);
     await box.put(_keyStrategy, jsonEncode(strategy));
+  }
+
+  // Update Existing Strategy (Edit/Progress)
+  Future<void> updateStrategy(Map<String, dynamic> strategy) async {
+    final box = Hive.box(_boxName);
+    await box.put(
+      _keyStrategy,
+      jsonEncode(strategy),
+    ); // Overwrites existing key
   }
 
   // Retrieve Strategy JSON
@@ -27,12 +36,6 @@ class OnboardingLocalService {
 
     if (data == null) return null;
     return jsonDecode(data);
-  }
-
-  // Update existing strategy (for checklist toggles)
-  Future<void> updateStrategy(Map<String, dynamic> strategy) async {
-    final box = Hive.box(_boxName);
-    await box.put(_keyStrategy, jsonEncode(strategy));
   }
 
   // Clear Storage

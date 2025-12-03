@@ -7,6 +7,10 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   DashboardCubit(this._repo) : super(const DashboardState());
 
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
   Future<void> loadDashboard() async {
     emit(state.copyWith(status: DashboardStatus.loading));
 
@@ -14,57 +18,62 @@ class DashboardCubit extends Cubit<DashboardState> {
       final strategy = _repo.getActiveStrategy();
 
       if (strategy == null) {
-        emit(
-          state.copyWith(status: DashboardStatus.error),
-        ); // Or redirect to onboarding
+        emit(state.copyWith(status: DashboardStatus.error));
         return;
       }
 
-      // 1. Calculate Time Metrics
+      // 1. Time Metrics
       final createdString =
           strategy['meta']?['created_at'] ?? DateTime.now().toIso8601String();
       final deadlineString = strategy['profile']['deadline'];
 
-      final startDate = DateTime.parse(createdString);
-      final deadline = DateTime.parse(deadlineString);
-      final now = DateTime.now();
+      final startDate = _normalizeDate(DateTime.parse(createdString));
+      final deadline = _normalizeDate(DateTime.parse(deadlineString));
+      final now = _normalizeDate(DateTime.now());
 
       final daysRemaining = deadline.difference(now).inDays;
-      final currentDayIndex =
-          now.difference(startDate).inDays + 1; // Day 1 is start
+      final currentDayIndex = now.difference(startDate).inDays + 1;
 
       // 2. Identify Current Phase
-      // Logic: Find the milestone where day_offset is closest but greater than currentDayIndex
       final milestones = List<Map<String, dynamic>>.from(
         strategy['milestones'],
       );
-      Map<String, dynamic>? activePhase = milestones.first;
+      Map<String, dynamic>? activePhase = milestones.isNotEmpty
+          ? milestones.last
+          : null;
 
-      for (var m in milestones) {
-        if (currentDayIndex >= (m['day_offset'] as int)) {
-          activePhase = m; // Update as we pass milestones
+      double calculatedProgress = 0.0;
+      int phaseStartDay = 1;
+
+      for (var i = 0; i < milestones.length; i++) {
+        final m = milestones[i];
+        final phaseEndDay = m['day_offset'] as int;
+
+        if (i > 0) {
+          phaseStartDay = (milestones[i - 1]['day_offset'] as int) + 1;
+        }
+
+        if (currentDayIndex <= phaseEndDay) {
+          activePhase = m;
+
+          final totalDaysInPhase = phaseEndDay - phaseStartDay + 1;
+          final daysIntoPhase = currentDayIndex - phaseStartDay + 1;
+
+          if (totalDaysInPhase > 0) {
+            calculatedProgress = (daysIntoPhase / totalDaysInPhase).clamp(
+              0.0,
+              1.0,
+            );
+          }
+          break;
         }
       }
 
-      // 3. Filter Tasks for "Today" (or current Week)
-      // Note: In a real app, this logic handles Week 1 vs Day 1 based on Cadence.
-      // For MVP, we just grab the first batch as a demo if Day 1 matches.
-      final tacticalBrief = List<Map<String, dynamic>>.from(
-        strategy['tactical_brief'],
-      );
-
-      // Simple lookup for demo: Find tasks matching current day index
-      // In production, you'd have robust date matching here.
-      List<Map<String, dynamic>> tasks = [];
-      try {
-        final dayData = tacticalBrief.firstWhere(
-          (e) => (e['day'] as int) == currentDayIndex,
-          orElse: () => tacticalBrief.first, // Fallback to first day for demo
-        );
-        tasks = List<Map<String, dynamic>>.from(dayData['tasks']);
-      } catch (e) {
-        // Fallback or empty if no tasks for this specific day
-      }
+      // 3. Get Tasks for TODAY (Default)
+      // Note: We default selectedDayIndex to currentDayIndex on load
+      final tasks = _getTasksForDay(currentDayIndex, strategy);
+      final isDayComplete =
+          tasks.isNotEmpty && tasks.every((t) => t['is_completed'] == true);
 
       emit(
         state.copyWith(
@@ -72,8 +81,11 @@ class DashboardCubit extends Cubit<DashboardState> {
           strategy: strategy,
           daysRemaining: daysRemaining,
           currentDayIndex: currentDayIndex,
+          selectedDayIndex: currentDayIndex, // Start at today
           currentPhase: activePhase,
+          phaseProgress: calculatedProgress,
           todaysTasks: tasks,
+          isDayComplete: isDayComplete,
         ),
       );
     } catch (e) {
@@ -82,50 +94,104 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
+  // Helper to extract tasks for any given day index
+  List<Map<String, dynamic>> _getTasksForDay(
+    int dayIndex,
+    Map<String, dynamic> strategy,
+  ) {
+    final tacticalBrief = List<Map<String, dynamic>>.from(
+      strategy['tactical_brief'],
+    );
+    try {
+      final dayData = tacticalBrief.firstWhere(
+        (e) => (e['day'] as int) == dayIndex,
+        orElse: () => {},
+      );
+      if (dayData.isNotEmpty && dayData['tasks'] != null) {
+        return List<Map<String, dynamic>>.from(dayData['tasks']);
+      }
+    } catch (e) {
+      // No tasks found
+    }
+    return [];
+  }
+
+  // NEW: Navigate History
+  void selectDay(int dayIndex) {
+    if (state.strategy == null) return;
+
+    // Don't allow selecting days beyond the mission scope or negative days
+    if (dayIndex < 1) return;
+
+    final tasks = _getTasksForDay(dayIndex, state.strategy!);
+    final isDayComplete =
+        tasks.isNotEmpty && tasks.every((t) => t['is_completed'] == true);
+
+    emit(
+      state.copyWith(
+        selectedDayIndex: dayIndex,
+        todaysTasks: tasks,
+        isDayComplete: isDayComplete,
+      ),
+    );
+  }
+
   void toggleTask(String taskId) {
     if (state.strategy == null) return;
 
-    // 1. Create a deep copy of the strategy to modify
-    // (We modify the 'tactical_brief' section)
     final updatedStrategy = Map<String, dynamic>.from(state.strategy!);
     final briefing = List<Map<String, dynamic>>.from(
       updatedStrategy['tactical_brief'],
     );
 
-    // 2. Find the day and the task
-    // We iterate through days to find the task with the matching ID
+    List<Map<String, dynamic>> updatedUiTasks = [];
+    bool stateChanged = false;
+
     for (var i = 0; i < briefing.length; i++) {
-      final dayData = briefing[i];
+      final dayData = Map<String, dynamic>.from(briefing[i]);
       final tasks = List<Map<String, dynamic>>.from(dayData['tasks']);
 
-      bool taskFound = false;
-      final updatedTasks = tasks.map((t) {
+      bool taskFoundInDay = false;
+
+      final newTasks = tasks.map((t) {
         if (t['id'] == taskId) {
-          taskFound = true;
-          return {...t, 'is_completed': !t['is_completed']};
+          taskFoundInDay = true;
+          stateChanged = true;
+          return {...t, 'is_completed': !(t['is_completed'] as bool)};
         }
         return t;
       }).toList();
 
-      if (taskFound) {
-        // Update the day's task list in the main briefing array
-        briefing[i] = {...dayData, 'tasks': updatedTasks};
+      if (taskFoundInDay) {
+        dayData['tasks'] = newTasks;
+        briefing[i] = dayData;
 
-        // Also update the 'todaysTasks' for the UI immediately (Optimistic Update)
-        if (dayData['day'] == state.currentDayIndex) {
-          emit(state.copyWith(todaysTasks: updatedTasks));
+        // If the toggled task belongs to the currently viewed day, update UI
+        if (dayData['day'] == state.selectedDayIndex) {
+          updatedUiTasks = newTasks;
         }
         break;
       }
     }
 
-    // 3. Reassemble and Save
+    if (!stateChanged) return;
+
     updatedStrategy['tactical_brief'] = briefing;
 
-    // Update local state so the full strategy is fresh
-    emit(state.copyWith(strategy: updatedStrategy));
+    final isComplete =
+        updatedUiTasks.isNotEmpty &&
+        updatedUiTasks.every((t) => t['is_completed'] == true);
 
-    // 4. Persist to Hive (Fire and forget)
+    emit(
+      state.copyWith(
+        strategy: updatedStrategy,
+        todaysTasks: updatedUiTasks.isNotEmpty
+            ? updatedUiTasks
+            : state.todaysTasks,
+        isDayComplete: isComplete,
+      ),
+    );
+
     _repo.saveStrategyProgress(updatedStrategy);
   }
 }

@@ -18,11 +18,9 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Inject Cubit
     return BlocProvider(
       create: (context) =>
-          DashboardCubit(context.read<OnboardingRepo>())
-            ..loadDashboard(), // Trigger load immediately
+          DashboardCubit(context.read<OnboardingRepo>())..loadDashboard(),
       child: const DashboardView(),
     );
   }
@@ -45,6 +43,43 @@ class DashboardView extends StatelessWidget {
     );
   }
 
+  // Date Picker Logic
+  Future<void> _pickDate(BuildContext context, DashboardState state) async {
+    if (state.strategy == null) return;
+
+    final createdStr = state.strategy!['meta']['created_at'];
+    final start = DateTime.parse(createdStr);
+    final end = DateTime.parse(state.strategy!['profile']['deadline']);
+
+    final currentViewDate = start.add(
+      Duration(days: state.selectedDayIndex - 1),
+    );
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: currentViewDate,
+      firstDate: start,
+      lastDate: end,
+      // FIX: Force no text scaling for DatePicker to avoid "maxScale > minScale" assertion error
+      // caused by the global clamp in app.dart interacting with internal DatePicker layout logic.
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      final diff = picked
+          .difference(DateTime(start.year, start.month, start.day))
+          .inDays;
+      context.read<DashboardCubit>().selectDay(diff + 1);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -65,9 +100,7 @@ class DashboardView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              context.push('/dump');
-            },
+            onPressed: () => context.push('/dump'),
           ),
         ],
       ),
@@ -99,9 +132,11 @@ class DashboardView extends StatelessWidget {
             );
           }
 
-          // Data Extraction
           final profile = state.strategy!['profile'];
           final missionTitle = profile['mission'] ?? 'CLASSIFIED';
+
+          final isViewingToday =
+              state.selectedDayIndex == state.currentDayIndex;
 
           return RefreshIndicator(
             onRefresh: () => context.read<DashboardCubit>().loadDashboard(),
@@ -113,26 +148,62 @@ class DashboardView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. HUD
+                  // 1. HUD with Date Picker
                   MissionHUD(
                     missionTitle: missionTitle,
                     daysRemaining: state.daysRemaining,
-                    dayIndex: state.currentDayIndex,
+                    dayIndex: state.selectedDayIndex,
+                    onDateTap: () => _pickDate(context, state),
                   ),
 
                   // 2. Phase Status
                   if (state.currentPhase != null) ...[
                     PhaseStatusCard(
                       phaseData: state.currentPhase!,
+                      progress: state.phaseProgress,
                       onTimelineTap: () => _showTimeline(context, state),
                     ),
                   ],
 
                   const SizedBox(height: 24),
 
-                  // 3. Checklist
+                  // 3. Visual Reward
+                  if (state.isDayComplete) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "DAY COMPLETE. STAND DOWN.",
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // 4. Checklist (Cleaned up)
                   TacticalChecklist(
                     tasks: state.todaysTasks,
+                    isReadOnly: !isViewingToday,
                     onToggle: (id) =>
                         context.read<DashboardCubit>().toggleTask(id),
                   ),
@@ -146,7 +217,7 @@ class DashboardView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Open "Panic Button" / State Reset
+          // TODO: Open "Panic Button"
         },
         backgroundColor: theme.colorScheme.error,
         child: Icon(Icons.priority_high, color: theme.colorScheme.onError),

@@ -75,7 +75,8 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          textStyle: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.bold),
+          // REMOVED: textStyle here caused the crash.
+          // It now correctly inherits from textTheme.labelLarge (JetBrainsMono) defined above.
         ),
       ),
     );
@@ -150,7 +151,7 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          textStyle: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.bold),
+          // REMOVED: textStyle
         ),
       ),
     );
@@ -226,7 +227,6 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
-      // UPDATED: Replaced MaterialStateProperty with WidgetStateProperty
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return primaryColor;
@@ -304,7 +304,6 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
       ),
-      // UPDATED: Replaced MaterialStateProperty with WidgetStateProperty
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return primaryColor;

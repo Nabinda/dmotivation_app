@@ -30,10 +30,6 @@ class OnboardingRepo {
 
       return remoteData;
     } catch (e) {
-      // Error handling strategy:
-      // If we had a previously saved strategy, we could return it here as a fallback?
-      // For Onboarding, we usually want fresh data, so we rethrow.
-      print("Repo Error: $e");
       rethrow;
     }
   }
@@ -45,5 +41,11 @@ class OnboardingRepo {
 
   Future<void> resetStrategy() async {
     await _localService.clearStrategy();
+  }
+
+  Future<void> saveStrategyProgress(
+    Map<String, dynamic> updatedStrategy,
+  ) async {
+    await _localService.updateStrategy(updatedStrategy);
   }
 }

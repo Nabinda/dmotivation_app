@@ -32,6 +32,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(state.copyWith(injectionPreferences: current));
   }
 
+  // NEW: Update Review Frequency
+  void updateReviewFrequency(String val) =>
+      emit(state.copyWith(reviewFrequency: val));
+
   // --- ENEMY UPDATES ---
   void toggleWeakness(String weakness) {
     final current = List<String>.from(state.weaknesses);
@@ -68,6 +72,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         "schedule": {
           "wake": "${state.wakeTime.hour}:${state.wakeTime.minute}",
           "sleep": "${state.sleepTime.hour}:${state.sleepTime.minute}",
+          "cadence": state.reviewFrequency, // Added to payload
         },
       };
 

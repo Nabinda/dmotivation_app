@@ -45,6 +45,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   final int _totalPages = 4;
 
   void _nextPage(BuildContext context, OnboardingState state) {
+    // Dismiss keyboard globally before navigating or validation
     FocusScope.of(context).unfocus();
 
     final cubit = context.read<OnboardingCubit>();
@@ -74,7 +75,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 
   void _prevPage() {
-    FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus(); // Dismiss keyboard when going back
     if (_currentPage > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
@@ -85,6 +86,7 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   // Date Picker Logic
   Future<void> _selectDeadline(BuildContext context) async {
+    // Critical: Unfocus any text fields to prevent keyboard from popping up over picker
     FocusScope.of(context).unfocus();
 
     final cubit = context.read<OnboardingCubit>();
@@ -119,6 +121,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     bool isWake,
     TimeOfDay current,
   ) async {
+    // Critical: Unfocus any text fields
     FocusScope.of(context).unfocus();
 
     final cubit = context.read<OnboardingCubit>();
@@ -174,6 +177,7 @@ class _OnboardingViewState extends State<OnboardingView> {
 
         return Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,
+          // GestureDetector to dismiss keyboard when tapping outside inputs
           body: GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Column(
@@ -239,6 +243,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                                 _selectTime(context, false, state.sleepTime),
                             selectedPreferences: state.injectionPreferences,
                             onTogglePreference: cubit.toggleInjectionPreference,
+                            // WIRED: New Review Frequency
+                            reviewFrequency: state.reviewFrequency,
+                            onFrequencyChanged: cubit.updateReviewFrequency,
                           ),
                         ),
                         SingleChildScrollView(

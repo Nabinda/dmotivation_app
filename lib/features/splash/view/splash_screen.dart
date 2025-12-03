@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:dmotivation/features/onboarding/repo/onboarding_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,6 +29,18 @@ class _SplashScreenState extends State<SplashScreen> {
     _runBootSequence();
   }
 
+  void _navigateBasedOnState() {
+    // Check if a strategy exists in the local database
+    final repo = context.read<OnboardingRepo>();
+    final hasStrategy = repo.getActiveStrategy() != null;
+
+    if (hasStrategy) {
+      context.go('/home');
+    } else {
+      context.go('/onboarding');
+    }
+  }
+
   void _runBootSequence() async {
     for (final line in _bootSequence) {
       await Future.delayed(Duration(milliseconds: 300 + (line.length * 5)));
@@ -40,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Wait a moment after final log, then navigate
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
-      context.go('/onboarding');
+      _navigateBasedOnState();
     }
   }
 

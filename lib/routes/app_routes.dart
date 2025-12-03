@@ -1,9 +1,8 @@
+import 'package:dmotivation/dump/theme_demo.dart';
+import 'package:dmotivation/features/dashboard/view/dashboard_screen.dart';
 import 'package:dmotivation/features/onboarding/view/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/view/splash_screen.dart';
-// Note: We'll reference the Showcase screen from app.dart or a dedicated file later.
-// For now, I will assume it's available or define the route to use it.
-import '../../app.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -15,9 +14,12 @@ class AppRouter {
         builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
-        path: '/home',
-        // Navigating to the ThemeShowcaseScreen which is currently inside app.dart
+        path: '/dump',
         builder: (context, state) => const ThemeShowcaseScreen(),
+      ),
+      GoRoute(
+        path: '/home',
+        builder: (context, state) => const DashboardScreen(),
       ),
     ],
   );

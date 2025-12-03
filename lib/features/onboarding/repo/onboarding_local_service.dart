@@ -16,7 +16,6 @@ class OnboardingLocalService {
   Future<void> saveStrategy(Map<String, dynamic> strategy) async {
     final box = Hive.box(_boxName);
     await box.put(_keyStrategy, jsonEncode(strategy));
-    print("--- LOCAL STORAGE: STRATEGY SAVED ---");
   }
 
   // Retrieve Strategy JSON
@@ -28,6 +27,12 @@ class OnboardingLocalService {
 
     if (data == null) return null;
     return jsonDecode(data);
+  }
+
+  // Update existing strategy (for checklist toggles)
+  Future<void> updateStrategy(Map<String, dynamic> strategy) async {
+    final box = Hive.box(_boxName);
+    await box.put(_keyStrategy, jsonEncode(strategy));
   }
 
   // Clear Storage

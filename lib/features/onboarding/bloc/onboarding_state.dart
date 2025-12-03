@@ -16,6 +16,8 @@ class OnboardingState {
   final TimeOfDay wakeTime;
   final TimeOfDay sleepTime;
   final List<String> injectionPreferences;
+  // NEW: How often they want to check tasks
+  final String reviewFrequency;
 
   // Enemy
   final List<String> weaknesses;
@@ -33,6 +35,7 @@ class OnboardingState {
     this.wakeTime = const TimeOfDay(hour: 7, minute: 0),
     this.sleepTime = const TimeOfDay(hour: 23, minute: 0),
     this.injectionPreferences = const ['Morning Kickoff', 'Evening Review'],
+    this.reviewFrequency = 'Daily', // Default to Daily
     this.weaknesses = const [],
     this.status = OnboardingStatus.initial,
     this.errorMessage,
@@ -47,6 +50,7 @@ class OnboardingState {
     TimeOfDay? wakeTime,
     TimeOfDay? sleepTime,
     List<String>? injectionPreferences,
+    String? reviewFrequency,
     List<String>? weaknesses,
     OnboardingStatus? status,
     String? errorMessage,
@@ -60,6 +64,7 @@ class OnboardingState {
       wakeTime: wakeTime ?? this.wakeTime,
       sleepTime: sleepTime ?? this.sleepTime,
       injectionPreferences: injectionPreferences ?? this.injectionPreferences,
+      reviewFrequency: reviewFrequency ?? this.reviewFrequency,
       weaknesses: weaknesses ?? this.weaknesses,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,

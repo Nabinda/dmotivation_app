@@ -4,8 +4,10 @@ import '../features/onboarding/view/onboarding_screen.dart';
 import '../features/dashboard/view/dashboard_screen.dart';
 import '../dump/theme_demo.dart';
 import '../features/settings/view/settings_screen.dart';
-import '../features/settings/view/paywall_screen.dart'; // Import Paywall
-import '../features/settings/view/manage_subscription_screen.dart'; // Import Manage
+import '../features/settings/view/paywall_screen.dart';
+import '../features/settings/view/manage_subscription_screen.dart';
+import '../features/analytics/view/tactical_analytics_screen.dart';
+import '../features/panic/view/panic_logs_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -24,7 +26,6 @@ class AppRouter {
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
       ),
-      // NEW ROUTES
       GoRoute(
         path: '/paywall',
         builder: (context, state) => const PaywallScreen(),
@@ -36,6 +37,14 @@ class AppRouter {
       GoRoute(
         path: '/home',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/analytics',
+        builder: (context, state) => const TacticalAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: '/panic-logs',
+        builder: (context, state) => const PanicLogsScreen(),
       ),
     ],
   );

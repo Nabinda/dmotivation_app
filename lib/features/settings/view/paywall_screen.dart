@@ -64,26 +64,26 @@ class PaywallScreen extends StatelessWidget {
                   children: [
                     _FeatureItem(
                       theme,
-                      "AI STRATEGY GENERATION",
-                      "Custom tactics based on your specific weakness.",
+                      "TACTICAL ANALYTICS",
+                      "Visualize consistency. Track streaks, completion rates, and daily output.",
                       secondaryTextColor,
                     ),
                     _FeatureItem(
                       theme,
-                      "DYNAMIC INJECTIONS",
-                      "Notifications that adapt to your failure points.",
+                      "PANIC LOGS",
+                      "Track emotional triggers. Analyze when and why you spiral.",
                       secondaryTextColor,
                     ),
                     _FeatureItem(
                       theme,
                       "UNLIMITED TIMELINE",
-                      "Plan beyond 30 days. Build a legacy.",
+                      "Plan beyond 30 days. Execute up to a 1 year mission.",
                       secondaryTextColor,
                     ),
                     _FeatureItem(
                       theme,
-                      "PANIC PROTOCOLS",
-                      "Full access to state-reset tools.",
+                      "EXTEND DEADLINE",
+                      "Life happens. Manually push your deadline if needed.",
                       secondaryTextColor,
                     ),
                     _FeatureItem(

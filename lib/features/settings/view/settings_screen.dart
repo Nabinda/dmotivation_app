@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../onboarding/repo/onboarding_repo.dart';
-import '../bloc/theme_cubit.dart';
 
 // Widget Imports
 import 'widgets/section_header.dart';
@@ -46,10 +45,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // FIX: Use onSurface with opacity for consistent visibility in both Light/Dark modes
-    final secondaryTextColor = theme.colorScheme.onSurface.withValues(
-      alpha: 0.6,
-    );
+    final secondaryTextColor = theme.brightness == Brightness.light
+        ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
+        : theme.colorScheme.secondary;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -182,6 +180,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
 
             const SizedBox(height: 32),
+
+            // OPERATOR INTELLIGENCE (Pro Only)
+            if (_isPro) ...[
+              const SectionHeader(title: "OPERATOR INTELLIGENCE"),
+              SettingsTile(
+                icon: Icons.bar_chart,
+                title: "Tactical Analytics",
+                subtitle: "View performance metrics and consistency.",
+                iconColor: theme.colorScheme.primary,
+                onTap: () {
+                  // WIRED: Navigate to Analytics
+                  context.push('/analytics');
+                },
+              ),
+              SettingsTile(
+                icon: Icons.psychology,
+                title: "Panic Logs",
+                subtitle: "Review emotional triggers and interventions.",
+                iconColor: theme.colorScheme.primary,
+                onTap: () {
+                  // WIRED: Navigate to Panic Logs
+                  context.push('/panic-logs');
+                },
+              ),
+              const SizedBox(height: 32),
+            ],
+
             const SectionHeader(title: "ACCOUNT"),
 
             if (!_isPro)

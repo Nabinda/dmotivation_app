@@ -42,6 +42,7 @@ class DashboardCubit extends Cubit<DashboardState> {
           ? milestones.last
           : null;
 
+      // Calculate Progress variables
       double calculatedProgress = 0.0;
       int phaseStartDay = 1;
 
@@ -70,7 +71,6 @@ class DashboardCubit extends Cubit<DashboardState> {
       }
 
       // 3. Get Tasks for TODAY (Default)
-      // Note: We default selectedDayIndex to currentDayIndex on load
       final tasks = _getTasksForDay(currentDayIndex, strategy);
       final isDayComplete =
           tasks.isNotEmpty && tasks.every((t) => t['is_completed'] == true);
@@ -94,7 +94,7 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  // Helper to extract tasks for any given day index
+  // NEW: Smart Task Fetcher (Handles Daily vs Weekly)
   List<Map<String, dynamic>> _getTasksForDay(
     int dayIndex,
     Map<String, dynamic> strategy,
@@ -102,25 +102,43 @@ class DashboardCubit extends Cubit<DashboardState> {
     final tacticalBrief = List<Map<String, dynamic>>.from(
       strategy['tactical_brief'],
     );
+
+    // Check Cadence
+    final profile = strategy['profile'] as Map<String, dynamic>;
+    final schedule = profile['schedule'] as Map<String, dynamic>;
+    final isWeekly = schedule['cadence'] == 'Weekly';
+
     try {
-      final dayData = tacticalBrief.firstWhere(
-        (e) => (e['day'] as int) == dayIndex,
-        orElse: () => {},
-      );
-      if (dayData.isNotEmpty && dayData['tasks'] != null) {
-        return List<Map<String, dynamic>>.from(dayData['tasks']);
+      Map<String, dynamic> data = {};
+
+      if (isWeekly) {
+        // Calculate Week Index (1-based)
+        // Day 1-7 = Week 1, Day 8-14 = Week 2
+        final weekIndex = ((dayIndex - 1) / 7).floor() + 1;
+
+        data = tacticalBrief.firstWhere(
+          (e) => (e['week'] as int) == weekIndex,
+          orElse: () => {},
+        );
+      } else {
+        // Daily Logic
+        data = tacticalBrief.firstWhere(
+          (e) => (e['day'] as int) == dayIndex,
+          orElse: () => {},
+        );
+      }
+
+      if (data.isNotEmpty && data['tasks'] != null) {
+        return List<Map<String, dynamic>>.from(data['tasks']);
       }
     } catch (e) {
-      // No tasks found
+      print("Task Fetch Error: $e");
     }
     return [];
   }
 
-  // NEW: Navigate History
   void selectDay(int dayIndex) {
     if (state.strategy == null) return;
-
-    // Don't allow selecting days beyond the mission scope or negative days
     if (dayIndex < 1) return;
 
     final tasks = _getTasksForDay(dayIndex, state.strategy!);
@@ -147,27 +165,43 @@ class DashboardCubit extends Cubit<DashboardState> {
     List<Map<String, dynamic>> updatedUiTasks = [];
     bool stateChanged = false;
 
-    for (var i = 0; i < briefing.length; i++) {
-      final dayData = Map<String, dynamic>.from(briefing[i]);
-      final tasks = List<Map<String, dynamic>>.from(dayData['tasks']);
+    // Check Cadence for logic
+    final profile = state.strategy!['profile'];
+    final schedule = profile['schedule'];
+    final isWeekly = schedule['cadence'] == 'Weekly';
 
-      bool taskFoundInDay = false;
+    // Calculate current viewing context (Day or Week)
+    final currentWeekIndex = ((state.selectedDayIndex - 1) / 7).floor() + 1;
+
+    for (var i = 0; i < briefing.length; i++) {
+      final periodData = Map<String, dynamic>.from(briefing[i]);
+      final tasks = List<Map<String, dynamic>>.from(periodData['tasks']);
+
+      bool taskFound = false;
 
       final newTasks = tasks.map((t) {
         if (t['id'] == taskId) {
-          taskFoundInDay = true;
+          taskFound = true;
           stateChanged = true;
           return {...t, 'is_completed': !(t['is_completed'] as bool)};
         }
         return t;
       }).toList();
 
-      if (taskFoundInDay) {
-        dayData['tasks'] = newTasks;
-        briefing[i] = dayData;
+      if (taskFound) {
+        periodData['tasks'] = newTasks;
+        briefing[i] = periodData;
 
-        // If the toggled task belongs to the currently viewed day, update UI
-        if (dayData['day'] == state.selectedDayIndex) {
+        // Check if this update affects the currently viewed list
+        bool shouldUpdateUi = false;
+        if (isWeekly) {
+          if (periodData['week'] == currentWeekIndex) shouldUpdateUi = true;
+        } else {
+          if (periodData['day'] == state.selectedDayIndex)
+            shouldUpdateUi = true;
+        }
+
+        if (shouldUpdateUi) {
           updatedUiTasks = newTasks;
         }
         break;

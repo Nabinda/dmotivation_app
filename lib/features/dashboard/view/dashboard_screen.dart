@@ -1,3 +1,4 @@
+import 'package:dmotivation/features/dashboard/view/painter/warning_triangle_shape.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,7 @@ import 'widgets/mission_hud.dart';
 import 'widgets/phase_status_card.dart';
 import 'widgets/tactical_checklist.dart';
 import 'widgets/timeline_sheet.dart';
+import '../../panic/view/panic_sheet.dart'; // Ensure you have the Panic feature created
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -43,6 +45,15 @@ class DashboardView extends StatelessWidget {
     );
   }
 
+  void _showPanicMode(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const PanicSheet(),
+    );
+  }
+
   // Date Picker Logic
   Future<void> _pickDate(BuildContext context, DashboardState state) async {
     if (state.strategy == null) return;
@@ -60,8 +71,6 @@ class DashboardView extends StatelessWidget {
       initialDate: currentViewDate,
       firstDate: start,
       lastDate: end,
-      // FIX: Force no text scaling for DatePicker to avoid "maxScale > minScale" assertion error
-      // caused by the global clamp in app.dart interacting with internal DatePicker layout logic.
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(
@@ -137,7 +146,6 @@ class DashboardView extends StatelessWidget {
 
           final isViewingToday =
               state.selectedDayIndex == state.currentDayIndex;
-          // Determine failure state: Past day AND not complete
           final isDayFailed =
               state.selectedDayIndex < state.currentDayIndex &&
               !state.isDayComplete;
@@ -171,121 +179,103 @@ class DashboardView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // 3. Visual Reward / Failure (Animated)
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 600),
-                    switchInCurve: Curves.easeOutBack,
-                    switchOutCurve: Curves.easeIn,
-                    transitionBuilder: (child, animation) {
-                      return SizeTransition(
-                        sizeFactor: animation,
-                        axisAlignment: -1.0,
-                        child: FadeTransition(opacity: animation, child: child),
-                      );
-                    },
-                    child: state.isDayComplete
-                        ? Container(
-                            key: const ValueKey('day_complete'),
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 16,
+                  // 3. Visual Reward / Failure
+                  if (state.isDayComplete) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: theme.colorScheme.primary,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.2,
                             ),
-                            margin: const EdgeInsets.only(bottom: 24),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(
-                                alpha: 0.1,
-                              ),
-                              border: Border.all(
-                                color: theme.colorScheme.primary,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(4),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  blurRadius: 12,
-                                  spreadRadius: 2,
-                                ),
-                              ],
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.verified,
+                            color: theme.colorScheme.primary,
+                            size: 32,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "MISSION ACCOMPLISHED",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
                             ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.verified,
-                                  color: theme.colorScheme.primary,
-                                  size: 32,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  "MISSION ACCOMPLISHED",
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "DAY ${state.selectedDayIndex} PROTOCOL COMPLETE. STAND DOWN.",
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "DAY ${state.selectedDayIndex} PROTOCOL COMPLETE. STAND DOWN.",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface,
                             ),
-                          )
-                        : isDayFailed
-                        ? Container(
-                            key: const ValueKey('day_failed'),
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 16,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else if (isDayFailed) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.error.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: theme.colorScheme.error,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: theme.colorScheme.error,
+                            size: 32,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "PROTOCOL FAILED",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.error,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
                             ),
-                            margin: const EdgeInsets.only(bottom: 24),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.error.withValues(
-                                alpha: 0.1,
-                              ),
-                              border: Border.all(
-                                color: theme.colorScheme.error,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(4),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "DAY ${state.selectedDayIndex} OBJECTIVES INCOMPLETE.",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface,
                             ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: theme.colorScheme.error,
-                                  size: 32,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  "PROTOCOL FAILED",
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.error,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "DAY ${state.selectedDayIndex} OBJECTIVES INCOMPLETE.",
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox.shrink(key: ValueKey('empty')),
-                  ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   // 4. Checklist (Cleaned up)
                   TacticalChecklist(
@@ -295,20 +285,31 @@ class DashboardView extends StatelessWidget {
                         context.read<DashboardCubit>().toggleTask(id),
                   ),
 
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Open "Panic Button"
-        },
-        backgroundColor: theme.colorScheme.error,
-        child: Icon(Icons.priority_high, color: theme.colorScheme.onError),
+      floatingActionButton: SizedBox(
+        width: 56,
+        height: 56,
+        child: FloatingActionButton(
+          backgroundColor: theme.colorScheme.error,
+          onPressed: () => _showPanicMode(context),
+          shape: const WarningTriangleShape(cornerRadius: 5.0),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Icon(
+              Icons.priority_high_rounded,
+              size: 26,
+              color: theme.colorScheme.onError,
+            ),
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

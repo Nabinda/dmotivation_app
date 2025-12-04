@@ -109,7 +109,7 @@ class DashboardView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.push('/dump'),
+            onPressed: () => context.push('/settings'),
           ),
         ],
       ),

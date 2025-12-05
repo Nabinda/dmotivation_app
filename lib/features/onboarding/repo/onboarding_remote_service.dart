@@ -5,7 +5,6 @@ class OnboardingRemoteService {
   Future<Map<String, dynamic>> generateStrategy(
     Map<String, dynamic> userProfile,
   ) async {
-
     // 1. Simulate Network Delay
     await Future.delayed(const Duration(seconds: 2));
 
@@ -145,6 +144,51 @@ class OnboardingRemoteService {
                   {
                     "id": "t_d3_1",
                     "content": "Complete Protocol (Day 3)",
+                    "is_completed": false,
+                  },
+                  {
+                    "id": "t_d3_2",
+                    "content": "Visualise the Deadline",
+                    "is_completed": false,
+                  },
+                ],
+              },
+              {
+                "day": 4,
+                "tasks": [
+                  {
+                    "id": "t_d3_1",
+                    "content": "Complete Protocol (Day 4)",
+                    "is_completed": false,
+                  },
+                  {
+                    "id": "t_d3_2",
+                    "content": "Visualise the Deadline",
+                    "is_completed": false,
+                  },
+                ],
+              },
+              {
+                "day": 5,
+                "tasks": [
+                  {
+                    "id": "t_d3_1",
+                    "content": "Complete Protocol (Day 5)",
+                    "is_completed": false,
+                  },
+                  {
+                    "id": "t_d3_2",
+                    "content": "Visualise the Deadline",
+                    "is_completed": false,
+                  },
+                ],
+              },
+              {
+                "day": 6,
+                "tasks": [
+                  {
+                    "id": "t_d3_1",
+                    "content": "Complete Protocol (Day 6)",
                     "is_completed": false,
                   },
                   {

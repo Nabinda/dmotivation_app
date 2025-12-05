@@ -32,7 +32,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(state.copyWith(injectionPreferences: current));
   }
 
-  // NEW: Update Review Frequency
   void updateReviewFrequency(String val) =>
       emit(state.copyWith(reviewFrequency: val));
 
@@ -47,8 +46,77 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(state.copyWith(weaknesses: current));
   }
 
-  // --- SUBMISSION ---
-  Future<void> submitStrategy() async {
+  // --- STRATEGY MODIFICATION (REVIEW PHASE) ---
+
+  void modifyTaskToggle(int dayIndex, String taskId) {
+    if (state.generatedStrategy == null) return;
+
+    final strategy = Map<String, dynamic>.from(state.generatedStrategy!);
+    final brief = List<Map<String, dynamic>>.from(strategy['tactical_brief']);
+
+    for (var i = 0; i < brief.length; i++) {
+      if (brief[i]['day'] == dayIndex) {
+        final tasks = List<Map<String, dynamic>>.from(brief[i]['tasks']);
+        final updatedTasks = tasks.map((t) {
+          if (t['id'] == taskId) {
+            return {...t, 'is_completed': !(t['is_completed'] as bool)};
+          }
+          return t;
+        }).toList();
+
+        brief[i] = {...brief[i], 'tasks': updatedTasks};
+        break;
+      }
+    }
+
+    strategy['tactical_brief'] = brief;
+    emit(state.copyWith(generatedStrategy: strategy));
+  }
+
+  void addTaskToDay(int dayIndex, String content) {
+    if (state.generatedStrategy == null) return;
+
+    final strategy = Map<String, dynamic>.from(state.generatedStrategy!);
+    final brief = List<Map<String, dynamic>>.from(strategy['tactical_brief']);
+
+    for (var i = 0; i < brief.length; i++) {
+      if (brief[i]['day'] == dayIndex) {
+        final tasks = List<Map<String, dynamic>>.from(brief[i]['tasks']);
+        tasks.add({
+          "id": "custom_t_${DateTime.now().millisecondsSinceEpoch}",
+          "content": content,
+          "is_completed": false,
+        });
+        brief[i] = {...brief[i], 'tasks': tasks};
+        break;
+      }
+    }
+
+    strategy['tactical_brief'] = brief;
+    emit(state.copyWith(generatedStrategy: strategy));
+  }
+
+  void removeTask(int dayIndex, String taskId) {
+    if (state.generatedStrategy == null) return;
+
+    final strategy = Map<String, dynamic>.from(state.generatedStrategy!);
+    final brief = List<Map<String, dynamic>>.from(strategy['tactical_brief']);
+
+    for (var i = 0; i < brief.length; i++) {
+      if (brief[i]['day'] == dayIndex) {
+        final tasks = List<Map<String, dynamic>>.from(brief[i]['tasks']);
+        tasks.removeWhere((t) => t['id'] == taskId);
+        brief[i] = {...brief[i], 'tasks': tasks};
+        break;
+      }
+    }
+
+    strategy['tactical_brief'] = brief;
+    emit(state.copyWith(generatedStrategy: strategy));
+  }
+
+  // --- STEP 1: GENERATE (NO SAVE) ---
+  Future<void> generateStrategy() async {
     if (state.objective.isEmpty || state.deadline == null) {
       emit(
         state.copyWith(
@@ -62,7 +130,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(state.copyWith(status: OnboardingStatus.submitting));
 
     try {
-      // Build the profile map
       final profile = {
         "mission": state.objective,
         "deadline": state.deadline!.toIso8601String(),
@@ -72,17 +139,47 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         "schedule": {
           "wake": "${state.wakeTime.hour}:${state.wakeTime.minute}",
           "sleep": "${state.sleepTime.hour}:${state.sleepTime.minute}",
-          "cadence": state.reviewFrequency, // Added to payload
+          "cadence": state.reviewFrequency,
         },
       };
 
-      await _repo.generateStrategy(profile);
-      emit(state.copyWith(status: OnboardingStatus.success));
+      // Call API only (Remote Service)
+      // Note: We access the remote service via the Repo wrapper
+      final strategy = await _repo.generateStrategy(profile);
+
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.generated, // Triggers nav to Review Screen
+          generatedStrategy: strategy,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
           status: OnboardingStatus.failure,
           errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  // --- STEP 2: CONFIRM (SAVE LOCAL) ---
+  Future<void> confirmStrategy() async {
+    if (state.generatedStrategy == null) return;
+
+    emit(state.copyWith(status: OnboardingStatus.submitting));
+
+    try {
+      // Save to Hive
+      await _repo.saveStrategyProgress(state.generatedStrategy!);
+      emit(
+        state.copyWith(status: OnboardingStatus.success),
+      ); // Triggers nav to Dashboard
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: OnboardingStatus.failure,
+          errorMessage: "Save failed: $e",
         ),
       );
     }

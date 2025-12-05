@@ -27,6 +27,15 @@ class AppTheme {
         error: errorColor,
         tertiary: errorColor,
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.jetBrainsMono(color: const Color(0xFF666666)),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF333333)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor),
+        ),
+      ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.jetBrainsMono(
           fontSize: 32,
@@ -75,8 +84,6 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          // REMOVED: textStyle here caused the crash.
-          // It now correctly inherits from textTheme.labelLarge (JetBrainsMono) defined above.
         ),
       ),
     );
@@ -97,10 +104,29 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFFE0E0E0),
+        secondary: Color(0xFF757575), // Darkened for visibility
         surface: surfaceColor,
         onSurface: Color(0xFF212121),
         error: errorColor,
+      ),
+      // FIX: Explicit Input Decoration for Light Mode Visibility
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surfaceColor,
+        hintStyle: GoogleFonts.jetBrainsMono(color: const Color(0xFF9E9E9E)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFBDBDBD), width: 1.5),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
+        errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: errorColor),
+        ),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.jetBrainsMono(
@@ -121,7 +147,7 @@ class AppTheme {
         ),
         bodyMedium: GoogleFonts.jetBrainsMono(
           fontSize: 14,
-          color: const Color(0xFF616161),
+          color: const Color(0xFF424242), // Darkened from 616161
         ),
         labelLarge: GoogleFonts.jetBrainsMono(
           fontSize: 14,
@@ -143,7 +169,10 @@ class AppTheme {
         color: surfaceColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
-          side: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+          side: const BorderSide(
+            color: Color(0xFFBDBDBD),
+            width: 1,
+          ), // Darkened border
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -151,7 +180,6 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          // REMOVED: textStyle
         ),
       ),
     );
@@ -179,6 +207,15 @@ class AppTheme {
         surface: surfaceColor,
         onSurface: Colors.white,
         error: primaryColor,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.robotoMono(color: const Color(0xFF666666)),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF333333)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor),
+        ),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.oswald(
@@ -251,10 +288,26 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFFBDBDBD),
+        secondary: Color(0xFF757575), // Darkened
         surface: surfaceColor,
         onSurface: Colors.black,
         error: primaryColor,
+      ),
+      // FIX: Explicit Input Decoration for Light Mode Visibility
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surfaceColor,
+        hintStyle: GoogleFonts.robotoMono(color: const Color(0xFF757575)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF9E9E9E), width: 1.5),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.oswald(
@@ -271,7 +324,7 @@ class AppTheme {
         bodyLarge: GoogleFonts.robotoMono(fontSize: 16, color: Colors.black),
         bodyMedium: GoogleFonts.robotoMono(
           fontSize: 14,
-          color: const Color(0xFF424242),
+          color: const Color(0xFF424242), // Darkened
         ),
         labelLarge: GoogleFonts.oswald(
           fontSize: 16,
@@ -294,7 +347,7 @@ class AppTheme {
         color: surfaceColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.zero,
-          side: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+          side: const BorderSide(color: Color(0xFF9E9E9E), width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -336,6 +389,17 @@ class AppTheme {
         surface: surfaceColor,
         onSurface: Color(0xFFF1F5F9),
         tertiary: Color(0xFF94A3B8),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF334155)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: primaryColor),
+        ),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.inter(
@@ -409,10 +473,28 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFFCBD5E1),
+        secondary: Color(0xFF94A3B8), // Darkened
         surface: surfaceColor,
         onSurface: Color(0xFF0F172A),
-        tertiary: Color(0xFF64748B),
+        tertiary: Color(0xFF475569),
+      ),
+      // FIX: Explicit Input Decoration for Light Mode Visibility
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surfaceColor,
+        hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
       ),
       textTheme: TextTheme(
         displayLarge: GoogleFonts.inter(
@@ -432,7 +514,7 @@ class AppTheme {
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
-          color: const Color(0xFF64748B),
+          color: const Color(0xFF475569), // Darkened
         ),
         labelLarge: GoogleFonts.inter(
           fontSize: 14,
@@ -455,7 +537,10 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: Color(0xFFE2E8F0)),
+          side: const BorderSide(
+            color: Color(0xFFCBD5E1),
+            width: 1,
+          ), // Darkened
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

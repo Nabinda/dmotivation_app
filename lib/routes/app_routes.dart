@@ -1,3 +1,5 @@
+import 'package:dmotivation/features/onboarding/bloc/onboarding_cubit.dart';
+import 'package:dmotivation/features/onboarding/view/strategy_review_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/splash/view/splash_screen.dart';
 import '../features/onboarding/view/onboarding_screen.dart';
@@ -17,6 +19,13 @@ class AppRouter {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/strategy-review',
+        builder: (context, state) {
+          final cubit = state.extra as OnboardingCubit;
+          return StrategyReviewScreen(onboardingCubit: cubit);
+        },
       ),
       GoRoute(
         path: '/dump',

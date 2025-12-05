@@ -21,10 +21,7 @@ class OnboardingLocalService {
   // Update Existing Strategy (Edit/Progress)
   Future<void> updateStrategy(Map<String, dynamic> strategy) async {
     final box = Hive.box(_boxName);
-    await box.put(
-      _keyStrategy,
-      jsonEncode(strategy),
-    ); // Overwrites existing key
+    await box.put(_keyStrategy, jsonEncode(strategy));
   }
 
   // Retrieve Strategy JSON

@@ -70,7 +70,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
 
     strategy['tactical_brief'] = brief;
-    emit(state.copyWith(generatedStrategy: strategy));
+    emit(
+      state.copyWith(
+        generatedStrategy: strategy,
+        status: OnboardingStatus.updated,
+      ),
+    );
   }
 
   void addTaskToDay(int dayIndex, String content) {
@@ -93,7 +98,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
 
     strategy['tactical_brief'] = brief;
-    emit(state.copyWith(generatedStrategy: strategy));
+    emit(
+      state.copyWith(
+        generatedStrategy: strategy,
+        status: OnboardingStatus.updated,
+      ),
+    );
   }
 
   void removeTask(int dayIndex, String taskId) {
@@ -112,7 +122,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
 
     strategy['tactical_brief'] = brief;
-    emit(state.copyWith(generatedStrategy: strategy));
+    emit(
+      state.copyWith(
+        generatedStrategy: strategy,
+        status: OnboardingStatus.updated,
+      ),
+    );
   }
 
   // --- STEP 1: GENERATE (NO SAVE) ---

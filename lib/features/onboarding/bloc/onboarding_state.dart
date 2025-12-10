@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum OnboardingStatus { initial, submitting, generated, success, failure }
+enum OnboardingStatus {
+  initial,
+  submitting,
+  generated,
+  success,
+  failure,
+  updated,
+}
 
 class OnboardingState {
   // Mission

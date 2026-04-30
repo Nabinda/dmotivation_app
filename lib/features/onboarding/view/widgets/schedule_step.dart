@@ -28,7 +28,7 @@ class ScheduleStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final options = ["Morning Kickoff", "Mid-Day Check", "Evening Review"];
+    final options = ["Morning Kickoff", "Random Check", "Evening Review"];
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

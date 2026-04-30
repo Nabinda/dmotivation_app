@@ -1,5 +1,6 @@
+import 'package:dmotivation/core/utils/notification_permission_helper.dart';
 import 'package:dmotivation/features/onboarding/view/widgets/strategy_day_editor.dart';
-import 'package:dmotivation/utils/color_utils.dart';
+import 'package:dmotivation/core/utils/color_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +50,13 @@ class _StrategyReviewScreenState extends State<StrategyReviewScreen> {
           listener: (context, state) {
             if (state.status == OnboardingStatus.success) {
               context.go('/home');
+            }
+            if (state.requiresPermissionPrompt) {
+              NotificationPermissionHelper.showSettingsDialog(context);
+
+              // IMPORTANT: You should immediately tell the Cubit to reset this flag to false.
+              // Otherwise, any future state changes might trigger this dialog again.
+              context.read<OnboardingCubit>().resetPermissionPrompt();
             }
           },
           child: CustomScrollView(

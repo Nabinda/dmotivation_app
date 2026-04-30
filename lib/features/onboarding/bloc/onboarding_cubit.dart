@@ -1,3 +1,5 @@
+import 'package:dmotivation/core/utils/notification_permission_helper.dart';
+import 'package:dmotivation/core/utils/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repo/onboarding_repo.dart';
@@ -178,13 +180,37 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
   }
 
-  // --- STEP 2: CONFIRM (SAVE LOCAL) ---
+  // --- CONFIRM (SAVE LOCAL) ---
   Future<void> confirmStrategy() async {
     if (state.generatedStrategy == null) return;
 
     emit(state.copyWith(status: OnboardingStatus.submitting));
 
     try {
+      // 1. Handle Permissions & Notifications
+      bool isGranted = await NotificationPermissionHelper.requestPermission(
+        onPermanentlyDenied: () {
+          // Tell the UI to show the settings dialog via state
+          emit(state.copyWith(requiresPermissionPrompt: true));
+        },
+      );
+
+      // 2. Schedule if granted
+      if (isGranted) {
+        final notificationService = NotificationService();
+        // Use user's selected times if available in state, otherwise use defaults
+        TimeOfDay wakeTime = TimeOfDay(
+          hour: state.wakeTime.hour,
+          minute: state.wakeTime.minute,
+        );
+        TimeOfDay sleepTime = TimeOfDay(
+          hour: state.sleepTime.hour,
+          minute: state.sleepTime.minute,
+        );
+
+        await notificationService.scheduleMorningBrief(wakeTime);
+        await notificationService.scheduleEveningDebrief(sleepTime);
+      }
       // Save to Hive
       await _repo.saveStrategyProgress(state.generatedStrategy!);
       emit(
@@ -198,5 +224,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         ),
       );
     }
+  }
+
+  // --- Reset Notification
+  void resetPermissionPrompt() async {
+    emit(state.copyWith(requiresPermissionPrompt: false));
   }
 }

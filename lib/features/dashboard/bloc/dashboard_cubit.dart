@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../onboarding/repo/onboarding_repo.dart';
 import 'dashboard_state.dart';
@@ -89,7 +90,6 @@ class DashboardCubit extends Cubit<DashboardState> {
         ),
       );
     } catch (e) {
-      print("Dashboard Load Error: $e");
       emit(state.copyWith(status: DashboardStatus.error));
     }
   }
@@ -132,7 +132,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         return List<Map<String, dynamic>>.from(data['tasks']);
       }
     } catch (e) {
-      print("Task Fetch Error: $e");
+      debugPrint("Task Fetch Error: $e");
     }
     return [];
   }

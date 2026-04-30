@@ -17,7 +17,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // MOCK STATE
-  bool _isPro = false;
+  bool _isPro = true;
   int _adsWatched = 1;
   final int _adsRequired = 4;
   final int _daysLeftInTrial = 2;
@@ -37,7 +37,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed == true && context.mounted) {
       await context.read<OnboardingRepo>().resetStrategy();
-      context.go('/onboarding');
+      if (context.mounted) {
+        context.go('/onboarding');
+      }
     }
   }
 
@@ -108,31 +110,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  // TIER BADGE
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _isPro
-                          ? Colors.amber.withValues(alpha: 0.2)
-                          : Colors.grey.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: _isPro ? Colors.amber : Colors.grey,
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      _isPro ? "PRO TIER" : "FREE TIER",
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _isPro ? Colors.amber : Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
+                  /// TIER BADGE - for next version
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(
+                  //     horizontal: 12,
+                  //     vertical: 4,
+                  //   ),
+                  //   decoration: BoxDecoration(
+                  //     color: _isPro
+                  //         ? Colors.amber.withValues(alpha: 0.2)
+                  //         : Colors.grey.withValues(alpha: 0.2),
+                  //     borderRadius: BorderRadius.circular(4),
+                  //     border: Border.all(
+                  //       color: _isPro ? Colors.amber : Colors.grey,
+                  //       width: 1,
+                  //     ),
+                  //   ),
+                  //   child: Text(
+                  //     _isPro ? "PRO TIER" : "FREE TIER",
+                  //     style: theme.textTheme.labelSmall?.copyWith(
+                  //       color: _isPro ? Colors.amber : Colors.grey,
+                  //       fontWeight: FontWeight.bold,
+                  //       letterSpacing: 1.5,
+                  //     ),
+                  //   ),
+                  // ),
 
                   // ADS TRACKER
                   if (!_isPro) ...[
@@ -182,7 +184,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 32),
 
             // OPERATOR INTELLIGENCE (Pro Only)
-            if (_isPro) ...[
+            if (!_isPro) ...[
               const SectionHeader(title: "OPERATOR INTELLIGENCE"),
               SettingsTile(
                 icon: Icons.bar_chart,
@@ -224,45 +226,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-            SettingsTile(
-              icon: _isPro ? Icons.verified_user : Icons.diamond_outlined,
-              title: _isPro ? "Manage Plan" : "Upgrade Plan",
-              subtitle: _isPro
-                  ? "View details or cancel subscription."
-                  : "Remove ads & unlock full access.",
-              textColor: _isPro ? null : theme.colorScheme.primary,
-              iconColor: _isPro ? null : theme.colorScheme.primary,
-              onTap: () async {
-                if (_isPro) {
-                  final result = await context.push<bool>(
-                    '/manage-subscription',
-                  );
-                  if (result == true && mounted) {
-                    setState(() => _isPro = false);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text(
-                          "SUBSCRIPTION CANCELLED. RETURNED TO FREE TIER.",
-                        ),
-                        backgroundColor: theme.colorScheme.error,
-                      ),
-                    );
-                  }
-                } else {
-                  final result = await context.push<bool>('/paywall');
-                  if (result == true && mounted) {
-                    setState(() => _isPro = true);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text("WELCOME, OPERATOR."),
-                        backgroundColor: theme.colorScheme.primary,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-
+            // SettingsTile(
+            //   icon: _isPro ? Icons.verified_user : Icons.diamond_outlined,
+            //   title: _isPro ? "Manage Plan" : "Upgrade Plan",
+            //   subtitle: _isPro
+            //       ? "View details or cancel subscription."
+            //       : "Remove ads & unlock full access.",
+            //   textColor: _isPro ? null : theme.colorScheme.primary,
+            //   iconColor: _isPro ? null : theme.colorScheme.primary,
+            //   onTap: () async {
+            //     if (_isPro) {
+            //       final result = await context.push<bool>(
+            //         '/manage-subscription',
+            //       );
+            //       if (result == true && mounted) {
+            //         setState(() => _isPro = false);
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(
+            //             content: const Text(
+            //               "SUBSCRIPTION CANCELLED. RETURNED TO FREE TIER.",
+            //             ),
+            //             backgroundColor: theme.colorScheme.error,
+            //           ),
+            //         );
+            //       }
+            //     } else {
+            //       final result = await context.push<bool>('/paywall');
+            //       if (result == true && mounted) {
+            //         setState(() => _isPro = true);
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(
+            //             content: const Text("WELCOME, OPERATOR."),
+            //             backgroundColor: theme.colorScheme.primary,
+            //           ),
+            //         );
+            //       }
+            //     }
+            //   },
+            // ),
             SettingsTile(
               icon: Icons.vpn_key,
               title: "Link Account",
@@ -284,7 +285,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.notifications,
               title: "Notifications",
               subtitle: "Manage alert timing.",
-              onTap: () {},
+              onTap: () {
+                context.push('/notification');
+              },
             ),
 
             const SizedBox(height: 32),

@@ -1,6 +1,7 @@
 import 'package:dmotivation/features/onboarding/repo/onboarding_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/utils/notification_service.dart';
 import 'features/settings/repo/settings_service.dart';
 import 'features/settings/bloc/theme_cubit.dart';
 // Import the Onboarding Repo
@@ -8,16 +9,18 @@ import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //  Initialize the Notification Service and Timezones
+  await NotificationService().init();
 
-  // 1. Initialize Local Database (Settings)
+  // Initialize Local Database (Settings)
   final settingsService = SettingsService();
   await settingsService.init();
 
-  // 2. Initialize Repositories (Data Layer)
+  // Initialize Repositories (Data Layer)
   // We create instances here so they live as long as the app lives.
   final onboardingRepo = OnboardingRepo();
   await onboardingRepo.init(); // Initialize Hive box for strategies
-  // 3. Run App with Providers
+  // Run App with Providers
   runApp(
     MultiRepositoryProvider(
       providers: [

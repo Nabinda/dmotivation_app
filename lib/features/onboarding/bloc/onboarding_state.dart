@@ -35,6 +35,9 @@ class OnboardingState {
   final OnboardingStatus status;
   final String? errorMessage;
 
+  // Notification Permission State
+  final bool requiresPermissionPrompt;
+
   const OnboardingState({
     this.objective = '',
     this.deepWhy = '',
@@ -49,6 +52,7 @@ class OnboardingState {
     this.generatedStrategy,
     this.status = OnboardingStatus.initial,
     this.errorMessage,
+    this.requiresPermissionPrompt = false,
   });
 
   OnboardingState copyWith({
@@ -65,6 +69,7 @@ class OnboardingState {
     Map<String, dynamic>? generatedStrategy,
     OnboardingStatus? status,
     String? errorMessage,
+    bool? requiresPermissionPrompt,
   }) {
     return OnboardingState(
       objective: objective ?? this.objective,
@@ -80,6 +85,8 @@ class OnboardingState {
       generatedStrategy: generatedStrategy ?? this.generatedStrategy,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
+      requiresPermissionPrompt:
+          requiresPermissionPrompt ?? this.requiresPermissionPrompt,
     );
   }
 }

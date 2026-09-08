@@ -47,3 +47,69 @@ Instead of a typical passive motivation app, ARISE acts as a **system interface 
 ### **📂 Project Structure**
 
 The project follows a clean, modular feature-based architecture tailored for Flutter.
+
+```
+
+lib/
+
+├── core/                      # Global services & utilities
+
+│   ├── api/                   # API integration layer (Dio, interceptors, clients)
+
+│   ├── network/               # Internet connectivity checker
+
+│   ├── exceptions/            # Global exception & failure handling
+
+│   ├── utils/                 # Global helpers, extensions, formatters
+
+│   └── config/                # App-wide config (env, constants)
+
+│
+
+├── routes/                    # App routing and navigation setup
+
+│   └── app_router.dart
+
+│
+
+├── themes/                    # Light/Dark themes, typography, colors
+
+│   ├── app_theme.dart
+
+│   └── colors.dart
+
+│
+
+├── features/                  # Modular feature-based structure
+
+│   └── feature_name/          # Example feature
+
+│       ├── bloc/              # Bloc / Cubit state management
+
+│       │   ├── feature_bloc.dart
+
+│       │   └── feature_state.dart
+
+│       │
+
+│       ├── repo/              # Repository + data source abstraction
+
+│       │   ├── feature_repo.dart
+
+│       │   └── feature_local_ds.dart / feature_remote_ds.dart
+
+│       │
+
+│       └── view/              # UI screens for the feature
+
+│           ├── feature_screen.dart
+
+│           └── widgets/
+
+│               └── feature_widget.dart
+
+│
+
+└── main.dart                  # Application entry point
+
+```

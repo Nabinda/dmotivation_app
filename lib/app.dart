@@ -8,17 +8,7 @@ class DMotivationApp extends StatelessWidget {
   const DMotivationApp({super.key});
 
   ThemeData _getTheme(String vibe, bool isDark) {
-    switch (vibe) {
-      case 'Defcon 1':
-        return isDark ? AppTheme.defcon1Dark : AppTheme.defcon1Light;
-      case 'Cold Truth':
-        return isDark ? AppTheme.coldTruthDark : AppTheme.coldTruthLight;
-      case 'Terminal Velocity':
-      default:
-        return isDark
-            ? AppTheme.terminalVelocityDark
-            : AppTheme.terminalVelocityLight;
-    }
+    return isDark ? AppTheme.ariseDark : AppTheme.ariseLight;
   }
 
   @override

@@ -3,15 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // ===========================================================================
-  // OPTION 1: TERMINAL VELOCITY (The Engineer/Hacker Vibe)
+  // ARISE: SOLO LEVELING VIBE (Shadow Monarch & System Aesthetic)
   // ===========================================================================
 
-  // DARK MODE
-  static ThemeData get terminalVelocityDark {
-    const primaryColor = Color(0xFF00FF94); // Phosphor Green
-    const backgroundColor = Color(0xFF0A0A0A); // Almost Black
-    const surfaceColor = Color(0xFF141414); // Deep Charcoal
-    const errorColor = Color(0xFFFF3B30); // Safety Red
+  // DARK MODE (The Monarchy / Shadow Dungeon Vibe)
+  static ThemeData get ariseDark {
+    const primaryColor = Color(0xFF9D4EDD); // Monarch Purple
+    const secondaryColor = Color(0xFF00F5D4); // Mana Cyan Glow
+    const backgroundColor = Color(0xFF07050B); // Absolute Void Black
+    const surfaceColor = Color(0xFF13101B); // Deep Slate Panel
+    const errorColor = Color(0xFFFF3366); // Critical Alert Red
 
     return ThemeData(
       useMaterial3: true,
@@ -20,450 +21,114 @@ class AppTheme {
       primaryColor: primaryColor,
       colorScheme: const ColorScheme.dark(
         primary: primaryColor,
-        onPrimary: Colors.black,
-        secondary: Color(0xFF404040),
-        surface: surfaceColor,
-        onSurface: Color(0xFFEDEDED),
-        error: errorColor,
-        tertiary: errorColor,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: GoogleFonts.jetBrainsMono(color: const Color(0xFF666666)),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF333333)),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor),
-        ),
-      ),
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -1.0,
-          color: Colors.white,
-        ),
-        displayMedium: GoogleFonts.jetBrainsMono(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -0.5,
-          color: primaryColor,
-        ),
-        bodyLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 16,
-          color: const Color(0xFFEDEDED),
-        ),
-        bodyMedium: GoogleFonts.jetBrainsMono(
-          fontSize: 14,
-          color: const Color(0xFFB0B0B0),
-        ),
-        labelLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
-        ),
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor,
-        elevation: 0,
-        titleTextStyle: GoogleFonts.jetBrainsMono(
-          color: primaryColor,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-          side: const BorderSide(color: Color(0xFF333333), width: 1),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-        ),
-      ),
-    );
-  }
-
-  // LIGHT MODE
-  static ThemeData get terminalVelocityLight {
-    const primaryColor = Color(0xFF00C853);
-    const backgroundColor = Color(0xFFF5F5F5);
-    const surfaceColor = Color(0xFFFFFFFF);
-    const errorColor = Color(0xFFD32F2F);
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: backgroundColor,
-      primaryColor: primaryColor,
-      colorScheme: const ColorScheme.light(
-        primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFF757575), // Darkened for visibility
+        secondary: secondaryColor,
         surface: surfaceColor,
-        onSurface: Color(0xFF212121),
+        onSurface: Color(0xFFE2E8F0),
         error: errorColor,
+        tertiary: secondaryColor,
       ),
-      // FIX: Explicit Input Decoration for Light Mode Visibility
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceColor,
-        hintStyle: GoogleFonts.jetBrainsMono(color: const Color(0xFF9E9E9E)),
+        hintStyle: GoogleFonts.rajdhani(
+          color: const Color(0xFF64748B),
+          fontSize: 16,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFBDBDBD), width: 1.5),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor, width: 2),
-        ),
-        errorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: errorColor),
-        ),
-      ),
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -1.0,
-          color: Colors.black,
-        ),
-        displayMedium: GoogleFonts.jetBrainsMono(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -0.5,
-          color: primaryColor,
-        ),
-        bodyLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 16,
-          color: const Color(0xFF212121),
-        ),
-        bodyMedium: GoogleFonts.jetBrainsMono(
-          fontSize: 14,
-          color: const Color(0xFF424242), // Darkened from 616161
-        ),
-        labelLarge: GoogleFonts.jetBrainsMono(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
-        ),
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor,
-        elevation: 0,
-        titleTextStyle: GoogleFonts.jetBrainsMono(
-          color: primaryColor,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-          side: const BorderSide(
-            color: Color(0xFFBDBDBD),
-            width: 1,
-          ), // Darkened border
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // OPTION 2: DEFCON 1 (The Aggressive/Urgency Vibe)
-  // ===========================================================================
-
-  // DARK MODE
-  static ThemeData get defcon1Dark {
-    const primaryColor = Color(0xFFFF4500);
-    const backgroundColor = Color(0xFF050505);
-    const surfaceColor = Color(0xFF111111);
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: backgroundColor,
-      primaryColor: primaryColor,
-      colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
-        onPrimary: Colors.white,
-        secondary: Color(0xFF555555),
-        surface: surfaceColor,
-        onSurface: Colors.white,
-        error: primaryColor,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: GoogleFonts.robotoMono(color: const Color(0xFF666666)),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF333333)),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor),
-        ),
-      ),
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.oswald(
-          fontSize: 40,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
-          color: Colors.white,
-        ),
-        displayMedium: GoogleFonts.oswald(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: primaryColor,
-        ),
-        bodyLarge: GoogleFonts.robotoMono(fontSize: 16, color: Colors.white),
-        bodyMedium: GoogleFonts.robotoMono(
-          fontSize: 14,
-          color: const Color(0xFF888888),
-        ),
-        labelLarge: GoogleFonts.oswald(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-        ),
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor,
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.oswald(
-          color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.5,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-          side: const BorderSide(color: Color(0xFF222222), width: 1),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        ),
-      ),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return primaryColor;
-          return Colors.transparent;
-        }),
-        side: const BorderSide(color: primaryColor, width: 2),
-      ),
-    );
-  }
-
-  // LIGHT MODE
-  static ThemeData get defcon1Light {
-    const primaryColor = Color(0xFFFF4500);
-    const backgroundColor = Color(0xFFFFFFFF);
-    const surfaceColor = Color(0xFFF5F5F5);
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: backgroundColor,
-      primaryColor: primaryColor,
-      colorScheme: const ColorScheme.light(
-        primary: primaryColor,
-        onPrimary: Colors.white,
-        secondary: Color(0xFF757575), // Darkened
-        surface: surfaceColor,
-        onSurface: Colors.black,
-        error: primaryColor,
-      ),
-      // FIX: Explicit Input Decoration for Light Mode Visibility
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceColor,
-        hintStyle: GoogleFonts.robotoMono(color: const Color(0xFF757575)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF9E9E9E), width: 1.5),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor, width: 2),
-        ),
-      ),
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.oswald(
-          fontSize: 40,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
-          color: Colors.black,
-        ),
-        displayMedium: GoogleFonts.oswald(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: primaryColor,
-        ),
-        bodyLarge: GoogleFonts.robotoMono(fontSize: 16, color: Colors.black),
-        bodyMedium: GoogleFonts.robotoMono(
-          fontSize: 14,
-          color: const Color(0xFF424242), // Darkened
-        ),
-        labelLarge: GoogleFonts.oswald(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-        ),
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor,
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.oswald(
-          color: Colors.black,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.5,
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      cardTheme: CardThemeData(
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-          side: const BorderSide(color: Color(0xFF9E9E9E), width: 1),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        ),
-      ),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return primaryColor;
-          return Colors.transparent;
-        }),
-        side: const BorderSide(color: primaryColor, width: 2),
-      ),
-    );
-  }
-
-  // ===========================================================================
-  // OPTION 3: COLD TRUTH (The Clinical Vibe)
-  // ===========================================================================
-
-  // DARK MODE
-  static ThemeData get coldTruthDark {
-    const primaryColor = Color(0xFF38BDF8);
-    const backgroundColor = Color(0xFF0F172A);
-    const surfaceColor = Color(0xFF1E293B);
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: backgroundColor,
-      primaryColor: primaryColor,
-      colorScheme: const ColorScheme.dark(
-        primary: primaryColor,
-        onPrimary: backgroundColor,
-        secondary: Color(0xFF334155),
-        surface: surfaceColor,
-        onSurface: Color(0xFFF1F5F9),
-        tertiary: Color(0xFF94A3B8),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF334155)),
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: Color(0xFF2A2438), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryColor),
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: errorColor, width: 1),
         ),
       ),
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.inter(
-          fontSize: 32,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.5,
+        displayLarge: GoogleFonts.orbitron(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
           color: Colors.white,
         ),
-        displayMedium: GoogleFonts.inter(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+        displayMedium: GoogleFonts.orbitron(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.8,
           color: primaryColor,
         ),
-        bodyLarge: GoogleFonts.spaceMono(
-          fontSize: 16,
+        bodyLarge: GoogleFonts.rajdhani(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
           color: const Color(0xFFE2E8F0),
         ),
-        bodyMedium: GoogleFonts.inter(
-          fontSize: 14,
+        bodyMedium: GoogleFonts.rajdhani(
+          fontSize: 16,
           color: const Color(0xFF94A3B8),
         ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: GoogleFonts.orbitron(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
+          letterSpacing: 1.0,
+          color: Colors.white,
         ),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundColor,
         elevation: 0,
-        titleTextStyle: GoogleFonts.inter(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.orbitron(
+          color: primaryColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.5,
         ),
+        iconTheme: const IconThemeData(color: secondaryColor),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
-        elevation: 0,
+        elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: Color(0xFF334155)),
+          side: const BorderSide(color: Color(0xFF2A2438), width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: backgroundColor,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          foregroundColor: Colors.white,
+          elevation: 4,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          textStyle: GoogleFonts.orbitron(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryColor,
-        foregroundColor: backgroundColor,
+        backgroundColor: secondaryColor,
+        foregroundColor: Colors.black,
       ),
     );
   }
 
-  // LIGHT MODE
-  static ThemeData get coldTruthLight {
-    const primaryColor = Color(0xFF0284C7);
-    const backgroundColor = Color(0xFFF1F5F9);
-    const surfaceColor = Color(0xFFFFFFFF);
+  // LIGHT MODE (The Hunter Association / Awakened Plaza Vibe)
+  static ThemeData get ariseLight {
+    const primaryColor = Color(0xFF7B2CBF); // Deep Royal Purple
+    const secondaryColor = Color(0xFF0077B6); // Clean Mana Blue
+    const backgroundColor = Color(0xFFF8FAFC); // Clean System White-Blue
+    const surfaceColor = Color(0xFFFFFFFF); // Pure White Cards
+    const errorColor = Color(0xFFD90429); // Alert Red
 
     return ThemeData(
       useMaterial3: true,
@@ -473,82 +138,96 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         onPrimary: Colors.white,
-        secondary: Color(0xFF94A3B8), // Darkened
+        secondary: secondaryColor,
         surface: surfaceColor,
         onSurface: Color(0xFF0F172A),
-        tertiary: Color(0xFF475569),
+        error: errorColor,
       ),
-      // FIX: Explicit Input Decoration for Light Mode Visibility
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceColor,
-        hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+        hintStyle: GoogleFonts.rajdhani(
+          color: const Color(0xFF94A3B8),
+          fontSize: 16,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           borderSide: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: errorColor, width: 1.5),
         ),
       ),
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.inter(
-          fontSize: 32,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.5,
+        displayLarge: GoogleFonts.orbitron(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
           color: Color(0xFF0F172A),
         ),
-        displayMedium: GoogleFonts.inter(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+        displayMedium: GoogleFonts.orbitron(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.8,
           color: primaryColor,
         ),
-        bodyLarge: GoogleFonts.spaceMono(
+        bodyLarge: GoogleFonts.rajdhani(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF1E293B),
+        ),
+        bodyMedium: GoogleFonts.rajdhani(
           fontSize: 16,
-          color: const Color(0xFF334155),
+          color: const Color(0xFF475569),
         ),
-        bodyMedium: GoogleFonts.inter(
-          fontSize: 14,
-          color: const Color(0xFF475569), // Darkened
-        ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: GoogleFonts.orbitron(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
+          letterSpacing: 1.0,
+          color: Colors.white,
         ),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundColor,
         elevation: 0,
-        titleTextStyle: GoogleFonts.inter(
-          color: Color(0xFF0F172A),
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+        centerTitle: true,
+        titleTextStyle: GoogleFonts.orbitron(
+          color: primaryColor,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.5,
         ),
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
-        elevation: 0,
+        elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(
-            color: Color(0xFFCBD5E1),
-            width: 1,
-          ), // Darkened
+          side: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          elevation: 2,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          textStyle: GoogleFonts.orbitron(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+          ),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
